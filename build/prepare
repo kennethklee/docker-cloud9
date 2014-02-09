@@ -1,0 +1,24 @@
+#!/bin/bash
+
+source $(dirname $0)/helpers.sh
+LOG=/tmp/log/$(basename $0).log
+mkdir -p /tmp/log
+
+(
+  display Installing packages
+  (
+    add-apt-repository -y ppa:chris-lea/node.js
+    apt-get update
+    xargs apt-get -y install < /build/packages.txt
+  ) 2>&1 | indent
+  
+  display Installing cloud9
+  (
+    git clone https://github.com/ajaxorg/cloud9.git /cloud9
+    cd /cloud9 && npm install
+  ) 2>&1 | indent
+  
+  display Creating workspace
+  mkdir /workspace
+  
+) 2>&1 | tee $LOG
